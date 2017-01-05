@@ -30,7 +30,7 @@ https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-A
 At some point i'll sortout a make file or something simular for compiling into a lib. For now just include the source into your app.
 
 Example use:
-
+<code>
 #include <iostream>
 #include <signal.h>
 #include <unistd.h>
@@ -93,4 +93,5 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+</code>
 
