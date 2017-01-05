@@ -30,68 +30,68 @@ https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-A
 At some point i'll sortout a make file or something simular for compiling into a lib. For now just include the source into your app.
 
 Example use:
-<code>
-#include <iostream>
-#include <signal.h>
-#include <unistd.h>
 
-#include <chrono>
-#include <thread>
-#include <linux/i2c-dev.h>
+	#include <iostream>
+	#include <signal.h>
+	#include <unistd.h>
 
-#include "gpiomem.h"
+	#include <chrono>
+	#include <thread>
+	#include <linux/i2c-dev.h>
+
+	#include "gpiomem.h"
 
 
-bool KeepGoing = true;
+	bool KeepGoing = true;
 
-void static CtrlHandler(int SigNum)
-{
-	static int numTimesAskedToExit = 0;
-	std::cout << std::endl << "Asked to quit, please wait" << std::endl;
-	if( numTimesAskedToExit > 2 )
+	void static CtrlHandler(int SigNum)
 	{
-		std::cout << "Asked to quit to many times, forcing exit in bad way" << std::endl;
-		exit(1);
-	}
-	KeepGoing = false;
-}
-
-int main(int argc, char *argv[])
-{
-	signal (SIGINT,CtrlHandler);
-
-	gpio::GPIOMem Pins;
-
-	if( Pins.Open() )
-	{
-		Pins.SetPinMode(19,gpio::GPIOMem::PINMODE_OUT);
-		Pins.SetPinMode(26,gpio::GPIOMem::PINMODE_OUT);
-		Pins.SetPinMode(21,gpio::GPIOMem::PINMODE_IN,gpio::GPIOMem::PINPULL_DOWN,gpio::GPIOMem::PINPULL_BOTH);
-
-		while(KeepGoing)
+		static int numTimesAskedToExit = 0;
+		std::cout << std::endl << "Asked to quit, please wait" << std::endl;
+		if( numTimesAskedToExit > 2 )
 		{
-			Pins.SetPin(19,false);
-			Pins.SetPin(26,false);
-			if( Pins.GetPinEdgeDetected(21) )
+			std::cout << "Asked to quit to many times, forcing exit in bad way" << std::endl;
+			exit(1);
+		}
+		KeepGoing = false;
+	}
+
+	int main(int argc, char *argv[])
+	{
+		signal (SIGINT,CtrlHandler);
+
+		gpio::GPIOMem Pins;
+
+		if( Pins.Open() )
+		{
+			Pins.SetPinMode(19,gpio::GPIOMem::PINMODE_OUT);
+			Pins.SetPinMode(26,gpio::GPIOMem::PINMODE_OUT);
+			Pins.SetPinMode(21,gpio::GPIOMem::PINMODE_IN,gpio::GPIOMem::PINPULL_DOWN,gpio::GPIOMem::PINPULL_BOTH);
+
+			while(KeepGoing)
 			{
-				if( Pins.GetPin(21) )
-					Pins.SetPin(19,true);
-				else
-					Pins.SetPin(26,true);
-				// Because it is using the hardware the release of the button will not be lost
-				// whilst it is sat here waiting.
-				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+				Pins.SetPin(19,false);
+				Pins.SetPin(26,false);
+				if( Pins.GetPinEdgeDetected(21) )
+				{
+					if( Pins.GetPin(21) )
+						Pins.SetPin(19,true);
+					else
+						Pins.SetPin(26,true);
+					// Because it is using the hardware the release of the button will not be lost
+					// whilst it is sat here waiting.
+					std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+				}
 			}
 		}
+
+		// Turn them off.
+		Pins.SetPin(19,false);
+		Pins.SetPin(26,false);
+
+		Pins.Close();
+
+		return 0;
 	}
 
-	// Turn them off.
-	Pins.SetPin(19,false);
-	Pins.SetPin(26,false);
-
-	Pins.Close();
-
-	return 0;
-}
-</code>
 
