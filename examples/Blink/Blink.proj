@@ -1,0 +1,7 @@
+{
+    "source_files": [
+        "Blink.cpp",
+        "../../TinyGPIO.cpp"
+    ],
+    "version": "0.0.1"
+}

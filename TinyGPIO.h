@@ -21,8 +21,7 @@
 #ifndef TINY_GPIO_H__
 #define TINY_GPIO_H__
 
-#include <ctypes>
-
+#include <stdint.h>
 #include <assert.h>
 
 namespace tinygpio{

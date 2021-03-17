@@ -38,7 +38,7 @@ const off_t GPIO_BASE = (off_t)0x00200000;
 
 GPIOMem::GPIOMem():
     mGPIOMemFile(0),
-    mGPIO(NULL)
+    mGPIO(nullptr)
 {
 
 }
@@ -57,32 +57,37 @@ bool GPIOMem::Open()
 		if( (void*)mGPIO != MAP_FAILED )
 		{
 #ifndef NDEBUG
-			std::cout << "/dev/gpiomem open Address: " << std::hex << mGPIO << std::dec << std::endl;
+			std::cout << "/dev/gpiomem open Address: " << std::hex << mGPIO << std::dec << "\n";
 #endif			
 		}
 		else
 		{
+			std::cerr << "mmap of /dev/gpiomem failed\n";
 			Close();
 		}
 	}
-    return mGPIOMemFile != 0;
+	else
+	{
+		std::cerr << "Opening /dev/gpiomem failed\n";
+	}
+    return mGPIOMemFile > 0;
 }
 
 void GPIOMem::Close()
 {
-    if( mGPIO != NULL )
+    if( mGPIO != nullptr )
     {
 #ifndef NDEBUG
-		std::cout << "Un mapping /dev/gpiomem" << std::endl;
+		std::cout << "Un mapping /dev/gpiomem\n";
 #endif
         munmap(mGPIO,BLOCK_SIZE);
-        mGPIO = NULL;
+        mGPIO = nullptr;
     }
 
 	if( mGPIOMemFile > 0 )
 	{
 #ifndef NDEBUG
-		std::cout << "Closing /dev/gpiomem" << std::endl;
+		std::cout << "Closing /dev/gpiomem\n";
 #endif
 		close(mGPIOMemFile);
 		mGPIOMemFile = 0;
@@ -91,13 +96,13 @@ void GPIOMem::Close()
 
 bool GPIOMem::SetPinMode(int pPin,GPIOMem::ePinMode pMode,GPIOMem::ePinPull pPull,ePinEdgeDetect pEdge)
 {// Don't need speed here so going for readablity instead. Still going to be very fast so stop looking at the if's. ;)
-	assert( mGPIO != NULL );
+	assert( mGPIO != nullptr );
 	assert( pPin >= 2 && pPin <= 27 );
 	assert( pMode == PINMODE_IN || pMode == PINMODE_OUT );
 	assert( pPull == PINPULL_FLOATING || pPull == PINPULL_DOWN || pPull == PINPULL_UP );
 	assert( pEdge == PINPULL_NONE || pEdge == PINPULL_RISING || pEdge == PINPULL_FALLING || pEdge == PINPULL_BOTH );
 
-    if( mGPIO != NULL &&
+    if( mGPIO != nullptr &&
 		pPin >= 2 && pPin <= 27 &&
 		(pMode == PINMODE_IN || pMode == PINMODE_OUT) &&
 		(pPull == PINPULL_FLOATING || pPull == PINPULL_DOWN || pPull == PINPULL_UP) &&
@@ -118,7 +123,7 @@ bool GPIOMem::SetPinMode(int pPin,GPIOMem::ePinMode pMode,GPIOMem::ePinPull pPul
 					<< " Mode: OUTPUT"
 					<< " Pull: IGNORED"
 					<< " Edge: IGNORED"
-					<< std::endl;
+					<< "\n";
 #endif
 		}
 		else
@@ -164,7 +169,7 @@ bool GPIOMem::SetPinMode(int pPin,GPIOMem::ePinMode pMode,GPIOMem::ePinPull pPul
 					<< " Mode: INPUT"
 					<< " Pull: " << (pPull==PINPULL_FLOATING?"FLOATING":pPull==PINPULL_DOWN?"DOWN":"UP")
 					<< " Edge: " << (pEdge==PINPULL_NONE?"NONE":pEdge==PINPULL_RISING?"RISING":pEdge==PINPULL_FALLING?"FALLING":"BOTH")
-					<< std::endl;
+					<< "\n";
 #endif
 		}
 		
