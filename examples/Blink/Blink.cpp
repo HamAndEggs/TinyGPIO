@@ -22,7 +22,7 @@ void static CtrlHandler(int SigNum)
     KeepGoing = false;
 }
 
-#define LED_PIN 19
+#define LED_PIN 17
 
 int main(int argc, char *argv[])
 {
