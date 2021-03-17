@@ -12,15 +12,20 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __GPIOMEM_H__
-#define __GPIOMEM_H__
+   Original code base is at https://github.com/HamAndEggs/TinyGPIO   
+
+*/
+
+#ifndef TINY_GPIO_H__
+#define TINY_GPIO_H__
+
+#include <ctypes>
 
 #include <assert.h>
-#include <functional>
 
-namespace gpio{
+namespace tinygpio{
 //////////////////////////////////////////////////////////////////////////
 // Memory maps /dev/gpiomem
 // Uses BCM pin numbering. See gadgetoid's site: http://pinout.xyz/
@@ -50,8 +55,6 @@ public:
         PINPULL_BOTH = 3,
     };
 
-    typedef std::function<void(int)> tPinEdgeDetectCB;
-
     // I don't support the pins 32 -> 53 to keep code simple. They are only for the compute module.
     // On the 40 pin header you have pins 2 -> 27 inclusive to play with.
     // Be carful as if you start playing with a pin that is being used for i2c for examples
@@ -70,13 +73,13 @@ public:
     // Pull mode and edge detect only applicable if in INPUT mode.
     bool SetPinMode(int pPin,ePinMode pMode,ePinPull pPull = PINPULL_FLOATING,ePinEdgeDetect pEdge = PINPULL_NONE);
 
-    // Set and get are inline to help preformance for the speed freeks.
+    // Set and get are inline to help performance for the speed freaks.
     // Although it is down to the complier options .
     // It should, if you pass a constant, do the shift and AND op in the preprocessor
-    // if optimisations are on.
+    // if optimisation are on.
 
     // Goes high if true or low if false. Will assert in debug if not in output mode.
-    void SetPin(int pPin,bool pHigh)
+    inline void SetPin(int pPin,bool pHigh)
     {
         assert( mGPIO != NULL );
         assert( pPin >= 2 && pPin <= 27 );
@@ -91,7 +94,7 @@ public:
     }
 
     // Returns false if pin is low (or an error) and true if pin is high. Asserts in debug if pin mode not set.
-    bool GetPin(int pPin)
+    inline bool GetPin(int pPin)
     {
         assert( mGPIO != NULL );
         assert( pPin >= 2 && pPin <= 27 );
@@ -104,7 +107,7 @@ public:
     // since you last called this it will return false.
     // So act on it when you see it return true.
     // The edge it detects depends on the mode you set with SetPinMode.
-    bool GetPinEdgeDetected(int pPin)
+    inline bool GetPinEdgeDetected(int pPin)
     {
         if( (mGPIO[16] & (1 << (pPin&31))) != 0 )
         {// Seen it, so clear it for the next one. As per the docs.
@@ -120,6 +123,6 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-};//	namespace gpio{
+};//	namespace tinygpio{
 
-#endif /*__GPIOMEM_H__*/
+#endif /*TINY_GPIO_H__*/

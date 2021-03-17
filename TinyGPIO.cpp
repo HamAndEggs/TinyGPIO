@@ -12,7 +12,11 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+   Original code base is at https://github.com/HamAndEggs/TinyGPIO   
+*/
+
 
 #include <sys/mman.h>
 #include <fcntl.h>
@@ -21,9 +25,9 @@
 #include <chrono>
 #include <thread>
 
-#include "gpiomem.h"
+#include "TinyGPIO.h"
 
-namespace gpio{
+namespace tinygpio{
 //////////////////////////////////////////////////////////////////////////
 // Used wiringpi code as reference for the setup phase.
 // http://wiringpi.com
@@ -171,4 +175,4 @@ bool GPIOMem::SetPinMode(int pPin,GPIOMem::ePinMode pMode,GPIOMem::ePinPull pPul
 }
 
 //////////////////////////////////////////////////////////////////////////
-};//	namespace gpio{
+};//	namespace tinygpio{
